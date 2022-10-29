@@ -3,138 +3,96 @@
 namespace TicketSwap\Assessment\tests;
 
 use PHPUnit\Framework\TestCase;
-use Money\Currency;
-use Money\Money;
-use TicketSwap\Assessment\Barcode;
-use TicketSwap\Assessment\Buyer;
-use TicketSwap\Assessment\Listing;
-use TicketSwap\Assessment\ListingId;
-use TicketSwap\Assessment\Marketplace;
-use TicketSwap\Assessment\Seller;
-use TicketSwap\Assessment\Ticket;
-use TicketSwap\Assessment\TicketAlreadySoldException;
-use TicketSwap\Assessment\TicketId;
+use TicketSwap\Assessment\Entity\Buyer;
+use TicketSwap\Assessment\Entity\Decorators\Barcode;
+use TicketSwap\Assessment\Entity\Decorators\TicketId;
+use TicketSwap\Assessment\Entity\Marketplace;
+use TicketSwap\Assessment\Entity\Ticket;
+use TicketSwap\Assessment\Exception\TicketAlreadySoldException;
+use TicketSwap\Assessment\Service\MarketPlaceService;
+use TicketSwap\Assessment\tests\MockData\Listings\MariyaListingWithOneTicket;
+use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketOneBuyer;
+use TicketSwap\Assessment\tests\MockData\Listings\PascalListingDuplicateTicket;
+use TicketSwap\Assessment\tests\MockData\Listings\TomListingOneTicketNoBuyer;
+use TicketSwap\Assessment\tests\MockData\MarketplaceExample;
 
 class MarketplaceTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_should_list_all_the_tickets_for_sale()
+    public function itShouldListAllTheTicketsForSale()
     {
-        $marketplace = new Marketplace(
-            listingsForSale: [
-                new Listing(
-                    id: new ListingId('D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                    seller: new Seller('Pascal'),
-                    tickets: [
-                        new Ticket(
-                            new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                            new Barcode('EAN-13', '38974312923')
-                        ),
-                    ],
-                    price: new Money(4950, new Currency('EUR')),
-                ),
-            ]
-        );
-
+        $marketplace = (new MarketplaceExample())->getMarketplace();
         $listingsForSale = $marketplace->getListingsForSale();
 
         $this->assertCount(1, $listingsForSale);
     }
 
     /**
+     * Business Rule: Buyers can buy individual tickets from a listing.
      * @test
      */
-    public function it_should_be_possible_to_buy_a_ticket()
+    public function itShouldBePossibleToBuyATicket()
     {
-        $marketplace = new Marketplace(
-            listingsForSale: [
-                new Listing(
-                    id: new ListingId('D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                    seller: new Seller('Pascal'),
-                    tickets: [
-                        new Ticket(
-                            new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                            new Barcode('EAN-13', '38974312923')
-                        ),
-                    ],
-                    price: new Money(4950, new Currency('EUR')),
-                ),
-            ]
-        );
+        $marketPlaceService = new MarketPlaceService();
+        $marketplace = (new MarketplaceExample())->getMarketplace();
 
-        $boughtTicket = $marketplace->buyTicket(
+        $boughtTicket = $marketPlaceService->buyTicket(
+            marketplace: $marketplace,
             buyer: new Buyer('Sarah'),
             ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
         );
 
         $this->assertNotNull($boughtTicket);
-        $this->assertSame('EAN-13:38974312923', (string) $boughtTicket->getBarcode());
+        $this->assertSame('EAN-13:38974312923', (string)$boughtTicket->getBarcode());
     }
 
     /**
      * @test
      */
-    public function it_should_not_be_possible_to_buy_the_same_ticket_twice()
+    public function itShouldNotBePossibleToBuyTheSameTicketTwice()
     {
+        $marketPlaceService = new MarketPlaceService();
         $marketplace = new Marketplace(
             listingsForSale: [
-                new Listing(
-                    id: new ListingId('D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                    seller: new Seller('Pascal'),
-                    tickets: [
-                        new Ticket(
-                            new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                            new Barcode('EAN-13', '38974312923')
-                        ),
-                    ],
-                    price: new Money(4950, new Currency('EUR')),
-                ),
+                (new PascalListingDuplicateTicket())->getListing()
             ]
         );
 
-        $this->expectException(TicketAlreadySoldException::class);
+        $buyer = new Buyer('Sarah');
+        $ticketId = new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B');
+        $barcode = new Barcode('EAN-13', '38974312923');
 
-        $marketplace->buyTicket(
-            buyer: new Buyer('Sarah'),
-            ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
+        $ticket = $marketPlaceService->buyTicket(
+            marketplace: $marketplace,
+            buyer: $buyer,
+            ticketId: $ticketId
         );
+
+        if (!($ticket instanceof Ticket)) {
+            $ticketAlreadySoldException = new TicketAlreadySoldException();
+            $message = $ticketAlreadySoldException->withTicket(
+                new Ticket(
+                    id: $ticketId,
+                    barcode: $barcode,
+                    buyer: $buyer
+                )
+            );
+            $this->assertNull($ticket , $message);
+        }
     }
 
     /**
+     * Business Rule: Sellers can create listings with tickets.
      * @test
      */
-    public function it_should_be_possible_to_put_a_listing_for_sale()
+    public function itShouldBePossibleToPutAListingForSale()
     {
-        $marketplace = new Marketplace(
-            listingsForSale: [
-                new Listing(
-                    id: new ListingId('D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                    seller: new Seller('Pascal'),
-                    tickets: [
-                        new Ticket(
-                            new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                            new Barcode('EAN-13', '38974312923')
-                        ),
-                    ],
-                    price: new Money(4950, new Currency('EUR')),
-                ),
-            ]
-        );
+        $marketplace = (new MarketplaceExample())->getMarketplace();
 
-        $marketplace->setListingForSale(
-            new Listing(
-                id: new ListingId('26A7E5C4-3F59-4B3C-B5EB-6F2718BC31AD'),
-                seller: new Seller('Tom'),
-                tickets: [
-                    new Ticket(
-                        new TicketId('45B96761-E533-4925-859F-3CA62182848E'),
-                        new Barcode('EAN-13', '893759834')
-                    ),
-                ],
-                price: new Money(4950, new Currency('EUR')),
-            )
+        $marketplace->addToListForSale(
+            (new TomListingOneTicketNoBuyer())->getListing()
         );
 
         $listingsForSale = $marketplace->getListingsForSale();
@@ -143,18 +101,59 @@ class MarketplaceTest extends TestCase
     }
 
     /**
+     * Business Rule: It should not be possible to create a listing with duplicate barcodes within another listing.
      * @test
      */
-    public function it_should_not_be_possible_to_sell_a_ticket_with_a_barcode_that_is_already_for_sale()
+    public function itShouldNotBePossibleToSellATicketWithABarcodeThatIsAlreadyForSale()
     {
-        $this->markTestSkipped('Needs to be implemented');
+        $marketplace = (new MarketplaceExample())->getMarketplace();
+
+        $marketPlaceService = new MarketPlaceService();
+        $canBeAdd = $marketPlaceService->checkTheTicketAlreadyAdded(
+            listing: (new MariyaListingWithOneTicket())->getListing(),
+            marketplace: $marketplace
+        );
+        $this->assertFalse($canBeAdd, "Can not add a ticket twice");
     }
 
     /**
+     * Business Rule: I should be possible for the last buyer of a ticket, to create a listing with that ticket
+     * (based on barcode).
      * @test
      */
-    public function it_should_be_possible_for_a_buyer_of_a_ticket_to_sell_it_again()
+    public function itShouldBePossibleForABuyerOfATicketToSellItAgain()
     {
-        $this->markTestSkipped('Needs to be implemented');
+        $marketplace = new Marketplace(
+            listingsForSale: [
+                (new PascalListingWithOneTicketOneBuyer())->getListing()
+            ]
+        );
+
+        $marketPlaceService = new MarketPlaceService();
+        $canBeAdd = $marketPlaceService->checkTheTicketAlreadyAdded(
+            listing: (new MariyaListingWithOneTicket())->getListing(),
+            marketplace: $marketplace
+        );
+        $this->assertTrue($canBeAdd, 'Can sell the same ticket he/she buy');
+
+    }
+
+    /**
+     * Business Rule: Once all tickets have been sold for a listing, it is no longer for sale.
+     * @test
+     */
+    public function itShouldBePossibleToRemoveListIfAllTickedSoled()
+    {
+        $marketPlaceService = new MarketPlaceService();
+        $marketplace = (new MarketplaceExample())->getMarketplace();
+
+        $ticket = $marketPlaceService->buyTicket(
+            marketplace: $marketplace,
+            buyer: new Buyer('Sarah'),
+            ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
+        );
+        $this->assertInstanceOf(Ticket::class, $ticket);
+        $this->assertCount(0, $marketplace->getListingsForSale());
+
     }
 }

@@ -4,7 +4,8 @@
     "type": "project",
     "require": {
         "phpunit/phpunit": "^9.5",
-        "moneyphp/money": "^4.0"
+        "moneyphp/money": "^4.0",
+        "phpunit/php-code-coverage": "^9.2"
     },
     "authors": [
         {
