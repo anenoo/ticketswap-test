@@ -166,7 +166,8 @@ class MarketPlaceService
         Seller $seller
     ): bool
     {
-        if ($newTicket->getBarcode() == $currentTicket->getBarcode()) {
+        $listingService = new ListingService();
+        if ($listingService->compareBarcodes($currentTicket, $newTicket)) {
             if (!($currentTicket->getBuyer()?->getName()
                 && $currentTicket->getBuyer()?->getName() === $seller?->getName())) {
                 return false;

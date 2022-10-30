@@ -4,6 +4,7 @@ namespace TicketSwap\Assessment\Entity;
 
 use Money\Money;
 use TicketSwap\Assessment\Entity\Decorators\ListingId;
+use TicketSwap\Assessment\Service\ListingService;
 
 final class Listing
 {
@@ -114,8 +115,9 @@ final class Listing
     public function addToTickets(Ticket $ticket): bool
     {
         if (count($this->tickets)) {
+            $listingService = new ListingService();
             foreach ($this->tickets as $currentTicket) {
-                if ($currentTicket instanceof Ticket && $currentTicket->getBarcode() == $ticket->getBarcode()) {
+                if ($listingService->compareBarcodes($currentTicket, $ticket)) {
                     return false;
                 }
             }

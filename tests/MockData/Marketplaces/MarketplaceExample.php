@@ -1,6 +1,6 @@
 <?php
 
-namespace TicketSwap\Assessment\tests\MockData;
+namespace TicketSwap\Assessment\tests\MockData\Marketplaces;
 
 use TicketSwap\Assessment\Entity\Marketplace;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketNoBuyer;

@@ -2,8 +2,14 @@
 
 namespace TicketSwap\Assessment\Entity;
 
+/**
+ *
+ */
 final class Marketplace
 {
+    /**
+     * @var array
+     */
     private array $listingsForSale;
 
     /**
@@ -32,18 +38,29 @@ final class Marketplace
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function emptyListingForSales(): Marketplace
     {
         $this->listingsForSale = [];
         return $this;
     }
 
+    /**
+     * @param Listing $listingsForSale
+     * @return $this
+     */
     public function addToListForSale(Listing $listingsForSale): Marketplace
     {
         $this->listingsForSale[] = $listingsForSale;
         return $this;
     }
 
+    /**
+     * @param $key
+     * @return $this
+     */
     public function removeFromListForSale($key): Marketplace
     {
         unset($this->listingsForSale[$key]);

@@ -51,5 +51,22 @@ class ListingService
         return (true === $forSale && !$ticket->isBought()) || (false === $forSale && $ticket->isBought());
     }
 
+    /**
+     * @param Ticket $currentTicket
+     * @param Ticket $newTicket
+     * @return bool
+     */
+    public function compareBarcodes(
+        Ticket $currentTicket,
+        Ticket $newTicket
+    ): bool
+    {
+        foreach ($currentTicket->getBarcodes() as $currentBarcode) {
+            if (in_array((string)$currentBarcode, $newTicket->getBarcodes())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

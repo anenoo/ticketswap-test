@@ -11,10 +11,10 @@ use TicketSwap\Assessment\Entity\Ticket;
 use TicketSwap\Assessment\Exception\TicketAlreadySoldException;
 use TicketSwap\Assessment\Service\MarketPlaceService;
 use TicketSwap\Assessment\tests\MockData\Listings\MariyaListingWithOneTicket;
-use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketOneBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingDuplicateTicket;
+use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketOneBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\TomListingOneTicketNoBuyer;
-use TicketSwap\Assessment\tests\MockData\MarketplaceExample;
+use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceExample;
 
 class MarketplaceTest extends TestCase
 {
@@ -43,9 +43,9 @@ class MarketplaceTest extends TestCase
             buyer: new Buyer('Sarah'),
             ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
         );
-
+        $barcode = $boughtTicket->getBarcodes()[0];
         $this->assertNotNull($boughtTicket);
-        $this->assertSame('EAN-13:38974312923', (string)$boughtTicket->getBarcode());
+        $this->assertSame('EAN-13:38974312923', (string)$barcode);
     }
 
     /**
@@ -75,11 +75,11 @@ class MarketplaceTest extends TestCase
             $message = $ticketAlreadySoldException->withTicket(
                 new Ticket(
                     id: $ticketId,
-                    barcode: $barcode,
+                    barcodes: [$barcode],
                     buyer: $buyer
                 )
             );
-            $this->assertNull($ticket , $message);
+            $this->assertNull($ticket, $message);
         }
     }
 

@@ -7,7 +7,7 @@ use TicketSwap\Assessment\Service\ListingService;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketNoBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithTwoTicketsNoBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithTwoTicketsOneBuyer;
-use TicketSwap\Assessment\tests\MockData\TicketExample;
+use TicketSwap\Assessment\tests\MockData\Tickets\TicketWithThreeBarcodesExample;
 
 class ListingTest extends TestCase
 {
@@ -32,7 +32,7 @@ class ListingTest extends TestCase
         $listing = (new PascalListingWithOneTicketNoBuyer())->getListing();
 
         $addToTickets = $listing->addToTickets(
-            (new TicketExample())->getTicket()
+            (new TicketWithThreeBarcodesExample())->getTicket()
         );
 
         $this->assertFalse($addToTickets, 'Can not add similar ticket again');
@@ -75,4 +75,5 @@ class ListingTest extends TestCase
         $this->assertCount(1, $ticketsNotForSale);
         $this->assertSame('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B', (string)$ticketsNotForSale[0]->getId());
     }
+
 }

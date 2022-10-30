@@ -24,7 +24,7 @@ class TomListingOneTicketNoBuyer
                 tickets: [
                     new Ticket(
                         new TicketId('45B96761-E533-4925-859F-3CA62182848E'),
-                        new Barcode('EAN-13', '893759834')
+                        [new Barcode('EAN-13', '893759834')]
                     ),
                 ],
                 price: new Money(4950, new Currency('EUR')),

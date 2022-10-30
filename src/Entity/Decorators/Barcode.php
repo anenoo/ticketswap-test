@@ -4,14 +4,65 @@ namespace TicketSwap\Assessment\Entity\Decorators;
 
 use Stringable;
 
+/**
+ *
+ */
 final class Barcode implements Stringable
 {
-    public function __construct(private string $type, private string $value)
+    private string $type;
+    private string $value;
+
+    /**
+     * @param string $type
+     * @param string $value
+     */
+    public function __construct(string $type, string $value)
     {
+        $this->setType($type);
+        $this->setValue($value);
     }
 
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return sprintf('%s:%s', $this->type, $this->value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return Barcode
+     */
+    public function setType(string $type): Barcode
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param string $value
+     * @return Barcode
+     */
+    public function setValue(string $value): Barcode
+    {
+        $this->value = $value;
+        return $this;
     }
 }
