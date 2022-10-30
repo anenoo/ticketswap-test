@@ -10,6 +10,18 @@ use TicketSwap\Assessment\Service\TicketService;
 
 class TicketServiceTest extends TestCase
 {
+    /**
+     * @var TicketService
+     */
+    private TicketService $ticketService;
+
+    /**
+     * @before
+     */
+    public function setupInitial()
+    {
+        $this->ticketService = new TicketService();
+    }
 
     /**
      * Business Rule: It should be possible to compare two tickets for finding has similar barcodes or not.
@@ -17,7 +29,8 @@ class TicketServiceTest extends TestCase
      * @group listing
      * @test
      */
-    public function itShouldBePossibleToCompareTwoTicketForFindingIsThereSimilarBarcodesOrNot(){
+    public function itShouldBePossibleToCompareTwoTicketForFindingIsThereSimilarBarcodesOrNot()
+    {
         $ticketA = new Ticket(
             new TicketId(id: '6293BB44-3456-4E2A-ACA8-8CDF01AF401B'),
             [
@@ -33,10 +46,9 @@ class TicketServiceTest extends TestCase
                 new Barcode(type: 'EAN-16', value: '38974312923'),
             ]
         );
-        $ticketService = new TicketService();
-        $hasMatch = $ticketService->compareBarcodes($ticketA ,$ticketB);
 
-        $this->assertTrue($hasMatch , 'Has similar matched barcodes');
+        $hasMatch = $this->ticketService->compareBarcodes($ticketA, $ticketB);
+        $this->assertTrue($hasMatch, 'Has similar matched barcodes');
     }
 
 }

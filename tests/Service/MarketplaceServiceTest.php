@@ -11,12 +11,39 @@ use TicketSwap\Assessment\Entity\Ticket;
 use TicketSwap\Assessment\Exception\TicketAlreadySoldException;
 use TicketSwap\Assessment\Service\MarketplaceService;
 use TicketSwap\Assessment\tests\MockData\Listings\MariyaListingWithOneTicket;
-use TicketSwap\Assessment\tests\MockData\Listings\PascalListingDuplicateTicket;
-use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketOneBuyer;
 use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceApprovedByAdminExample;
+use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceTicketWithBuyerExample;
+use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceWithDuplicateTicketsExample;
 
 class MarketplaceServiceTest extends TestCase
 {
+    /**
+     * @var MarketplaceService
+     */
+    private MarketplaceService $marketPlaceService;
+    /**
+     * @var Marketplace
+     */
+    private Marketplace $MarketplaceApprovedByAdminExample;
+    /**
+     * @var Marketplace
+     */
+    private Marketplace $MarketplaceWithDuplicateTicketsExample;
+    /**
+     * @var Marketplace
+     */
+    private Marketplace $MarketplaceTicketWithBuyerExample;
+
+    /**
+     * @before
+     */
+    public function setupInitial()
+    {
+        $this->marketPlaceService = new MarketplaceService();
+        $this->MarketplaceApprovedByAdminExample = (new MarketplaceApprovedByAdminExample())->getMarketplace();
+        $this->MarketplaceWithDuplicateTicketsExample = (new MarketplaceWithDuplicateTicketsExample())->getMarketplace();
+        $this->MarketplaceTicketWithBuyerExample = (new MarketplaceTicketWithBuyerExample())->getMarketplace();
+    }
 
     /**
      * Business Rule: Buyers can buy individual tickets from a listing, while admin approved the list.
@@ -26,10 +53,9 @@ class MarketplaceServiceTest extends TestCase
      */
     public function itShouldBePossibleToBuyATicketWhileAdminApprovedList()
     {
-        $marketPlaceService = new MarketplaceService();
-        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
+        $marketplace = $this->MarketplaceApprovedByAdminExample;
 
-        $boughtTicket = $marketPlaceService->buyTicket(
+        $boughtTicket = $this->marketPlaceService->buyTicket(
             marketplace: $marketplace,
             buyer: new Buyer(name: 'Sarah'),
             ticketId: new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
@@ -48,18 +74,13 @@ class MarketplaceServiceTest extends TestCase
      */
     public function itShouldNotBePossibleToBuyTheSameTicketTwice()
     {
-        $marketPlaceService = new MarketplaceService();
-        $marketplace = new Marketplace(
-            listingsForSale: [
-                (new PascalListingDuplicateTicket())->getListing()
-            ]
-        );
+        $marketplace = $this->MarketplaceWithDuplicateTicketsExample;
 
         $buyer = new Buyer('Sarah');
         $ticketId = new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B');
         $barcode = new Barcode('EAN-13', '38974312923');
 
-        $ticket = $marketPlaceService->buyTicket(
+        $ticket = $this->marketPlaceService->buyTicket(
             marketplace: $marketplace,
             buyer: $buyer,
             ticketId: $ticketId
@@ -87,10 +108,9 @@ class MarketplaceServiceTest extends TestCase
      */
     public function itShouldNotBePossibleToSellATicketWithABarcodeThatIsAlreadyForSale()
     {
-        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
+        $marketplace = $this->MarketplaceApprovedByAdminExample;
 
-        $marketPlaceService = new MarketplaceService();
-        $canBeAdd = $marketPlaceService->checkTheTicketAlreadyAdded(
+        $canBeAdd = $this->marketPlaceService->checkTheTicketAlreadyAdded(
             listing: (new MariyaListingWithOneTicket())->getListing(),
             marketplace: $marketplace
         );
@@ -107,14 +127,9 @@ class MarketplaceServiceTest extends TestCase
      */
     public function itShouldBePossibleForABuyerOfATicketToSellItAgain()
     {
-        $marketplace = new Marketplace(
-            listingsForSale: [
-                (new PascalListingWithOneTicketOneBuyer())->getListing()
-            ]
-        );
+        $marketplace = $this->MarketplaceTicketWithBuyerExample;
 
-        $marketPlaceService = new MarketplaceService();
-        $canBeAdd = $marketPlaceService->checkTheTicketAlreadyAdded(
+        $canBeAdd = $this->marketPlaceService->checkTheTicketAlreadyAdded(
             listing: (new MariyaListingWithOneTicket())->getListing(),
             marketplace: $marketplace
         );
@@ -131,10 +146,9 @@ class MarketplaceServiceTest extends TestCase
      */
     public function itShouldBePossibleToRemoveListIfAllTickedSoled()
     {
-        $marketPlaceService = new MarketplaceService();
-        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
+        $marketplace = $this->MarketplaceApprovedByAdminExample;
 
-        $ticket = $marketPlaceService->buyTicket(
+        $ticket = $this->marketPlaceService->buyTicket(
             marketplace: $marketplace,
             buyer: new Buyer('Sarah'),
             ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
