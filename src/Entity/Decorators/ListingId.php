@@ -5,10 +5,13 @@ namespace TicketSwap\Assessment\Entity\Decorators;
 use Stringable;
 
 /**
- *
+ * An ID, which I didn't get why we use it!
  */
 final class ListingId implements Stringable
 {
+    /**
+     * @var string
+     */
     private string $id;
 
     /**

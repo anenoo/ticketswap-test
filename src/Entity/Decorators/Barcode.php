@@ -5,11 +5,17 @@ namespace TicketSwap\Assessment\Entity\Decorators;
 use Stringable;
 
 /**
- *
+ * A converted text for use in tickets.
  */
 final class Barcode implements Stringable
 {
+    /**
+     * @var string
+     */
     private string $type;
+    /**
+     * @var string
+     */
     private string $value;
 
     /**

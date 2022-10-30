@@ -4,10 +4,16 @@ namespace TicketSwap\Assessment\Entity;
 
 use Money\Money;
 use TicketSwap\Assessment\Entity\Decorators\ListingId;
-use TicketSwap\Assessment\Service\ListingService;
+use TicketSwap\Assessment\Service\TicketService;
 
+/**
+ * A list for ticket, which a seller can put it for sale in marketplace
+ */
 final class Listing
 {
+    /**
+     * @var ListingId
+     */
     private ListingId $id;
     /**
      * Business Rule: Sellers can create listings with tickets.
@@ -19,22 +25,31 @@ final class Listing
      * @var array
      */
     private array $tickets = [];
+    /**
+     * @var Money
+     */
     private Money $price;
+    /**
+     * @var Administrator|null
+     */
+    private ?Administrator $administrator;
 
     /**
      * @param array<Ticket> $tickets
      */
     public function __construct(
-        ListingId $id,
-        Seller    $seller,
-        array     $tickets,
-        Money     $price
+        ListingId     $id,
+        Seller        $seller,
+        array         $tickets,
+        Money         $price,
+        Administrator $administrator = null
     )
     {
-        $this->setId($id);
-        $this->setSeller($seller);
-        $this->setTickets($tickets);
-        $this->setPrice($price);
+        $this->setId($id)
+            ->setSeller($seller)
+            ->setTickets($tickets)
+            ->setPrice($price)
+            ->setAdministrator($administrator);
     }
 
     /**
@@ -112,12 +127,16 @@ final class Listing
         return $this;
     }
 
+    /**
+     * @param Ticket $ticket
+     * @return bool
+     */
     public function addToTickets(Ticket $ticket): bool
     {
         if (count($this->tickets)) {
-            $listingService = new ListingService();
+            $ticketService = new TicketService();
             foreach ($this->tickets as $currentTicket) {
-                if ($listingService->compareBarcodes($currentTicket, $ticket)) {
+                if ($ticketService->compareBarcodes($currentTicket, $ticket)) {
                     return false;
                 }
             }
@@ -125,5 +144,31 @@ final class Listing
         $this->tickets[] = $ticket;
         return true;
 
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApproveByAdmin(): bool
+    {
+        return $this->getAdministrator() instanceof Administrator;
+    }
+
+    /**
+     * @return Administrator|null
+     */
+    public function getAdministrator(): ?Administrator
+    {
+        return $this->administrator;
+    }
+
+    /**
+     * @param Administrator|null $administrator
+     * @return Listing
+     */
+    public function setAdministrator(?Administrator $administrator): Listing
+    {
+        $this->administrator = $administrator;
+        return $this;
     }
 }

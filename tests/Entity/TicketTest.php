@@ -1,6 +1,6 @@
 <?php
 
-namespace TicketSwap\Assessment\tests;
+namespace TicketSwap\Assessment\tests\Entity;
 
 use PHPUnit\Framework\TestCase;
 use TicketSwap\Assessment\Entity\Decorators\Barcode;
@@ -14,6 +14,8 @@ class TicketTest extends TestCase
 
     /**
      * Business Rule: It should be possible to create a Ticket with one barcode
+     * @covers \TicketSwap\Assessment\Entity\Ticket::getBarcodes
+     * @group ticket
      * @test
      */
     public function itShouldBePossibleCreateATicketWithOneBarcode()
@@ -25,6 +27,8 @@ class TicketTest extends TestCase
 
     /**
      * Business Rule: It should be possible to create a Ticket with Multiple barcode
+     * @covers \TicketSwap\Assessment\Entity\Ticket::getBarcodes
+     * @group ticket
      * @test
      */
     public function itShouldBePossibleCreateATicketWithMultipleBarcode()
@@ -36,6 +40,8 @@ class TicketTest extends TestCase
 
     /**
      * Business Rule: It should be possible to create a Ticket with Multiple barcode by adding new barcode
+     * @covers \TicketSwap\Assessment\Entity\Ticket::addToBarcodes
+     * @group ticket
      * @test
      */
     public function itShouldBePossibleToAddABarcodeForTicket()
@@ -50,6 +56,8 @@ class TicketTest extends TestCase
 
     /**
      * Business Rule: It should be possible to remove from barcodes of a Ticket
+     * @covers \TicketSwap\Assessment\Entity\Ticket::removeFromBarcodes
+     * @group ticket
      * @test
      */
     public function itShouldBePossibleRemoveFromBarcodesForTicket()

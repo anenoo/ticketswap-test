@@ -5,7 +5,7 @@ namespace TicketSwap\Assessment\Entity;
 use Stringable;
 
 /**
- *
+ * A person who can buy a ticket, it has only name here.
  */
 final class Buyer implements Stringable
 {

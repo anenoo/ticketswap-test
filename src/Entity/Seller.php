@@ -5,7 +5,7 @@ namespace TicketSwap\Assessment\Entity;
 use Stringable;
 
 /**
- *
+ * A person for selling a ticket and it only included the name
  */
 final class Seller implements Stringable
 {

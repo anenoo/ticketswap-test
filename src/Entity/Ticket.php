@@ -5,9 +5,6 @@ namespace TicketSwap\Assessment\Entity;
 use TicketSwap\Assessment\Entity\Decorators\Barcode;
 use TicketSwap\Assessment\Entity\Decorators\TicketId;
 
-/**
- *
- */
 final class Ticket
 {
 
@@ -35,9 +32,9 @@ final class Ticket
         ?Buyer   $buyer = null
     )
     {
-        $this->setId($id);
-        $this->setBarcodes($barcodes);
-        $this->setBuyer($buyer);
+        $this->setId($id)
+            ->setBarcodes($barcodes)
+            ->setBuyer($buyer);
     }
 
     /**

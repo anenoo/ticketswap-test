@@ -14,10 +14,10 @@ class TicketWithTwoBarcodesExample
     {
         $this->setTicket(
             new Ticket(
-                new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
                 [
-                    new Barcode('EAN-13', '38974312923'),
-                    new Barcode('EAN-89', '23456789456'),
+                    new Barcode(type: 'EAN-13', value: '38974312923'),
+                    new Barcode(type: 'EAN-89', value: '23456789456'),
                 ]
             )
         );

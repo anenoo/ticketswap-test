@@ -3,7 +3,7 @@
 namespace TicketSwap\Assessment\Entity;
 
 /**
- *
+ * The place, sellers add there tickets.
  */
 final class Marketplace
 {
@@ -34,7 +34,10 @@ final class Marketplace
      */
     public function setListingsForSale(array $listingsForSale): Marketplace
     {
-        $this->listingsForSale = $listingsForSale;
+        $this->emptyListingForSales();
+        foreach ($listingsForSale as $listing) {
+            $this->addToListForSale($listing);
+        }
         return $this;
     }
 
@@ -53,7 +56,8 @@ final class Marketplace
      */
     public function addToListForSale(Listing $listingsForSale): Marketplace
     {
-        $this->listingsForSale[] = $listingsForSale;
+        if ($listingsForSale->isApproveByAdmin())
+            $this->listingsForSale[] = $listingsForSale;
         return $this;
     }
 

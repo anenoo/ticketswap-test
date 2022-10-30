@@ -14,8 +14,8 @@ class TicketExample
     {
         $this->setTicket(
             new Ticket(
-                new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                [new Barcode('EAN-13', '38974312923')]
+                new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode(type: 'EAN-13', value: '38974312923')]
             )
         );
     }

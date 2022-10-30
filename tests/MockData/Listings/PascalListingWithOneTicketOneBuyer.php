@@ -4,6 +4,7 @@ namespace TicketSwap\Assessment\tests\MockData\Listings;
 
 use Money\Currency;
 use Money\Money;
+use TicketSwap\Assessment\Entity\Administrator;
 use TicketSwap\Assessment\Entity\Buyer;
 use TicketSwap\Assessment\Entity\Decorators\Barcode;
 use TicketSwap\Assessment\Entity\Decorators\ListingId;
@@ -20,8 +21,8 @@ class PascalListingWithOneTicketOneBuyer
     {
         $this->setListing(
             new Listing(
-                id: new ListingId('D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                seller: new Seller('Pascal'),
+                id: new ListingId(id: 'D59FDCCC-7713-45EE-A050-8A553A0F1169'),
+                seller: new Seller(name: 'Pascal'),
                 tickets: [
                     new Ticket(
                         new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
@@ -30,6 +31,12 @@ class PascalListingWithOneTicketOneBuyer
                     ),
                 ],
                 price: new Money(4950, new Currency('EUR')),
+                administrator: new Administrator(
+                    id: 1,
+                    name: 'Super Admin',
+                    username: 'super-admin',
+                    password: ''
+                )
             )
         );
     }

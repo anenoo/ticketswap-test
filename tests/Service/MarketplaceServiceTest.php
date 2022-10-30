@@ -1,6 +1,6 @@
 <?php
 
-namespace TicketSwap\Assessment\tests;
+namespace TicketSwap\Assessment\tests\Entity;
 
 use PHPUnit\Framework\TestCase;
 use TicketSwap\Assessment\Entity\Buyer;
@@ -9,39 +9,30 @@ use TicketSwap\Assessment\Entity\Decorators\TicketId;
 use TicketSwap\Assessment\Entity\Marketplace;
 use TicketSwap\Assessment\Entity\Ticket;
 use TicketSwap\Assessment\Exception\TicketAlreadySoldException;
-use TicketSwap\Assessment\Service\MarketPlaceService;
+use TicketSwap\Assessment\Service\MarketplaceService;
 use TicketSwap\Assessment\tests\MockData\Listings\MariyaListingWithOneTicket;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingDuplicateTicket;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketOneBuyer;
-use TicketSwap\Assessment\tests\MockData\Listings\TomListingOneTicketNoBuyer;
-use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceExample;
+use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceApprovedByAdminExample;
 
-class MarketplaceTest extends TestCase
+class MarketplaceServiceTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function itShouldListAllTheTicketsForSale()
-    {
-        $marketplace = (new MarketplaceExample())->getMarketplace();
-        $listingsForSale = $marketplace->getListingsForSale();
-
-        $this->assertCount(1, $listingsForSale);
-    }
 
     /**
-     * Business Rule: Buyers can buy individual tickets from a listing.
+     * Business Rule: Buyers can buy individual tickets from a listing, while admin approved the list.
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::buyTicket
+     * @group marketplace
      * @test
      */
-    public function itShouldBePossibleToBuyATicket()
+    public function itShouldBePossibleToBuyATicketWhileAdminApprovedList()
     {
-        $marketPlaceService = new MarketPlaceService();
-        $marketplace = (new MarketplaceExample())->getMarketplace();
+        $marketPlaceService = new MarketplaceService();
+        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
 
         $boughtTicket = $marketPlaceService->buyTicket(
             marketplace: $marketplace,
-            buyer: new Buyer('Sarah'),
-            ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
+            buyer: new Buyer(name: 'Sarah'),
+            ticketId: new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B')
         );
         $barcode = $boughtTicket->getBarcodes()[0];
         $this->assertNotNull($boughtTicket);
@@ -49,11 +40,15 @@ class MarketplaceTest extends TestCase
     }
 
     /**
+     * Business Rule: It should not be possible to buy the same ticket twice.
+     * The list is approved by admin.
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::buyTicket
+     * @group marketplace
      * @test
      */
     public function itShouldNotBePossibleToBuyTheSameTicketTwice()
     {
-        $marketPlaceService = new MarketPlaceService();
+        $marketPlaceService = new MarketplaceService();
         $marketplace = new Marketplace(
             listingsForSale: [
                 (new PascalListingDuplicateTicket())->getListing()
@@ -84,31 +79,17 @@ class MarketplaceTest extends TestCase
     }
 
     /**
-     * Business Rule: Sellers can create listings with tickets.
-     * @test
-     */
-    public function itShouldBePossibleToPutAListingForSale()
-    {
-        $marketplace = (new MarketplaceExample())->getMarketplace();
-
-        $marketplace->addToListForSale(
-            (new TomListingOneTicketNoBuyer())->getListing()
-        );
-
-        $listingsForSale = $marketplace->getListingsForSale();
-
-        $this->assertCount(2, $listingsForSale);
-    }
-
-    /**
      * Business Rule: It should not be possible to create a listing with duplicate barcodes within another listing.
+     * The list is approved by Admin.
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::checkTheTicketAlreadyAdded
+     * @group marketplace
      * @test
      */
     public function itShouldNotBePossibleToSellATicketWithABarcodeThatIsAlreadyForSale()
     {
-        $marketplace = (new MarketplaceExample())->getMarketplace();
+        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
 
-        $marketPlaceService = new MarketPlaceService();
+        $marketPlaceService = new MarketplaceService();
         $canBeAdd = $marketPlaceService->checkTheTicketAlreadyAdded(
             listing: (new MariyaListingWithOneTicket())->getListing(),
             marketplace: $marketplace
@@ -119,6 +100,9 @@ class MarketplaceTest extends TestCase
     /**
      * Business Rule: I should be possible for the last buyer of a ticket, to create a listing with that ticket
      * (based on barcode).
+     * The list is approved by Admin.
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::checkTheTicketAlreadyAdded
+     * @group marketplace
      * @test
      */
     public function itShouldBePossibleForABuyerOfATicketToSellItAgain()
@@ -129,7 +113,7 @@ class MarketplaceTest extends TestCase
             ]
         );
 
-        $marketPlaceService = new MarketPlaceService();
+        $marketPlaceService = new MarketplaceService();
         $canBeAdd = $marketPlaceService->checkTheTicketAlreadyAdded(
             listing: (new MariyaListingWithOneTicket())->getListing(),
             marketplace: $marketplace
@@ -140,12 +124,15 @@ class MarketplaceTest extends TestCase
 
     /**
      * Business Rule: Once all tickets have been sold for a listing, it is no longer for sale.
+     * The list is approved by Admin.
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::buyTicket
+     * @group marketplace
      * @test
      */
     public function itShouldBePossibleToRemoveListIfAllTickedSoled()
     {
-        $marketPlaceService = new MarketPlaceService();
-        $marketplace = (new MarketplaceExample())->getMarketplace();
+        $marketPlaceService = new MarketplaceService();
+        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
 
         $ticket = $marketPlaceService->buyTicket(
             marketplace: $marketplace,

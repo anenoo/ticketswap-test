@@ -7,6 +7,10 @@ use TicketSwap\Assessment\Entity\Ticket;
 
 class TicketAlreadySoldException extends Exception
 {
+    /**
+     * @param Ticket $ticket
+     * @return static
+     */
     public static function withTicket(Ticket $ticket): self
     {
         return new self(

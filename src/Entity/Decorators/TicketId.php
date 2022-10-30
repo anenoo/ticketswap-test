@@ -5,10 +5,13 @@ namespace TicketSwap\Assessment\Entity\Decorators;
 use Stringable;
 
 /**
- *
+ * The ID for each Ticket which as some functionality for equal ID
  */
 final class TicketId implements Stringable
 {
+    /**
+     * @var string
+     */
     private string $id;
 
     /**

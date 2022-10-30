@@ -4,7 +4,7 @@ namespace TicketSwap\Assessment\tests\MockData\Listings;
 
 use Money\Currency;
 use Money\Money;
-use TicketSwap\Assessment\Entity\Buyer;
+use TicketSwap\Assessment\Entity\Administrator;
 use TicketSwap\Assessment\Entity\Decorators\Barcode;
 use TicketSwap\Assessment\Entity\Decorators\ListingId;
 use TicketSwap\Assessment\Entity\Decorators\TicketId;
@@ -12,7 +12,7 @@ use TicketSwap\Assessment\Entity\Listing;
 use TicketSwap\Assessment\Entity\Seller;
 use TicketSwap\Assessment\Entity\Ticket;
 
-class PascalListingWithTwoTicketsOneBuyer
+class TomListingOneTicketNoBuyerWithAdministrator
 {
     public Listing $listing;
 
@@ -20,20 +20,21 @@ class PascalListingWithTwoTicketsOneBuyer
     {
         $this->setListing(
             new Listing(
-                id: new ListingId(id: 'D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                seller: new Seller(name: 'Pascal'),
+                id: new ListingId('26A7E5C4-3F59-4B3C-B5EB-6F2718BC31AD'),
+                seller: new Seller(name: 'Tom'),
                 tickets: [
                     new Ticket(
-                        new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                        [new Barcode(type: 'EAN-13', value: '38974312923')],
-                        new Buyer(name: 'Jane')
-                    ),
-                    new Ticket(
-                        new TicketId(id: 'B47CBE2D-9F80-47D9-A9CC-894CE82AA6BA'),
-                        [new Barcode(type: 'EAN-13', value: '38957953498')]
+                        id: new TicketId('45B96761-E533-4925-859F-3CA62182848E'),
+                        barcodes: [new Barcode('EAN-13', '893759834')]
                     ),
                 ],
                 price: new Money(4950, new Currency('EUR')),
+                administrator: new Administrator(
+                    id: 1,
+                    name: 'Super Admin',
+                    username: 'super-admin',
+                    password: ''
+                )
             )
         );
     }
@@ -49,9 +50,9 @@ class PascalListingWithTwoTicketsOneBuyer
 
     /**
      * @param Listing $listing
-     * @return PascalListingWithTwoTicketsOneBuyer
+     * @return TomListingOneTicketNoBuyerWithAdministrator
      */
-    public function setListing(Listing $listing): PascalListingWithTwoTicketsOneBuyer
+    public function setListing(Listing $listing): TomListingOneTicketNoBuyerWithAdministrator
     {
         $this->listing = $listing;
         return $this;

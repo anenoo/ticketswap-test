@@ -1,61 +1,40 @@
 <?php
 
-namespace TicketSwap\Assessment\tests;
+namespace TicketSwap\Assessment\tests\Entity;
 
 use PHPUnit\Framework\TestCase;
 use TicketSwap\Assessment\Service\ListingService;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketNoBuyer;
-use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithTwoTicketsNoBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithTwoTicketsOneBuyer;
-use TicketSwap\Assessment\tests\MockData\Tickets\TicketWithThreeBarcodesExample;
 
-class ListingTest extends TestCase
+class ListingServiceTest extends TestCase
 {
     /**
      * Business Rule: It should be possible to create a list
+     * @covers \TicketSwap\Assessment\Service\ListingService::buildTicketsForBuy
+     * @group listing
      * @test
      */
     public function itShouldBePossibleToCreateAListing()
     {
         $listingService = new ListingService();
         $listing = (new PascalListingWithOneTicketNoBuyer())->getListing();
+        $getTicketsForBuy = $listingService->buildTicketsForBuy($listing->getTickets());
 
-        $this->assertCount(1, $listingService->buildTicketsForBuy($listing->getTickets()));
-    }
-
-    /** Business Rule: It should not be possible to create a listing with duplicate barcodes in it.
-     * @test
-     */
-    public function itShouldNotBePossibleToCreateAListingWithDuplicateBarcodes()
-    {
-
-        $listing = (new PascalListingWithOneTicketNoBuyer())->getListing();
-
-        $addToTickets = $listing->addToTickets(
-            (new TicketWithThreeBarcodesExample())->getTicket()
-        );
-
-        $this->assertFalse($addToTickets, 'Can not add similar ticket again');
-    }
-
-    /** Business Rule: It should not be possible to create a listing with duplicate barcodes in it.
-     * @test
-     */
-    public function itShouldNotBePossibleToCreateAListingWithDuplicateBarcodesInitialTest()
-    {
-        $listing = (new PascalListingWithTwoTicketsNoBuyer())->getListing();
-
-        $this->assertCount(1, $listing->getTickets());
+        $this->assertCount(1, $getTicketsForBuy);
     }
 
     /**
      * Business Rule: It should be possible for create a list of tickets for sale
+     * @covers \TicketSwap\Assessment\Service\ListingService::buildTicketsForBuy
+     * @group listing
      * @test
      */
     public function itShouldListTheTicketsForSale()
     {
-        $listing = (new PascalListingWithTwoTicketsOneBuyer())->getListing();
+
         $listingService = new ListingService();
+        $listing = (new PascalListingWithTwoTicketsOneBuyer())->getListing();
         $ticketsForSale = $listingService->buildTicketsForBuy($listing->getTickets(), true);
 
         $this->assertCount(1, $ticketsForSale);
@@ -64,12 +43,15 @@ class ListingTest extends TestCase
 
     /**
      * Business Rule: It should be possible for create a list of tickets NOT for sale
+     * @covers \TicketSwap\Assessment\Service\ListingService::buildTicketsForBuy
+     * @group listing
      * @test
      */
     public function itShouldListTheTicketsNotForSale()
     {
-        $listing = (new PascalListingWithTwoTicketsOneBuyer())->getListing();
+
         $listingService = new ListingService();
+        $listing = (new PascalListingWithTwoTicketsOneBuyer())->getListing();
         $ticketsNotForSale = $listingService->buildTicketsForBuy($listing->getTickets(), false);
 
         $this->assertCount(1, $ticketsNotForSale);

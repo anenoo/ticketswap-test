@@ -19,16 +19,16 @@ class PascalListingWithTwoTicketsNoBuyer
     {
         $this->setListing(
             new Listing(
-                id: new ListingId('D59FDCCC-7713-45EE-A050-8A553A0F1169'),
-                seller: new Seller('Pascal'),
+                id: new ListingId(id: 'D59FDCCC-7713-45EE-A050-8A553A0F1169'),
+                seller: new Seller(name: 'Pascal'),
                 tickets: [
                     new Ticket(
-                        new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                        [new Barcode('EAN-13', '38974312923')]
+                        new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                        [new Barcode(type: 'EAN-13', value: '38974312923')]
                     ),
                     new Ticket(
-                        new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
-                        [new Barcode('EAN-13', '38974312923')]
+                        new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                        [new Barcode(type: 'EAN-13', value: '38974312923')]
                     )
                 ],
                 price: new Money(4950, new Currency('EUR')),

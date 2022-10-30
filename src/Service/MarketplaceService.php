@@ -9,10 +9,7 @@ use TicketSwap\Assessment\Entity\Marketplace;
 use TicketSwap\Assessment\Entity\Seller;
 use TicketSwap\Assessment\Entity\Ticket;
 
-/**
- *
- */
-class MarketPlaceService
+class MarketplaceService
 {
     /**
      *
@@ -60,7 +57,7 @@ class MarketPlaceService
      * @param int|string $listingKey
      * @return array
      */
-    public function searchListToBuyTicket(
+    private function searchListToBuyTicket(
         Listing     $listing,
         int         $isThereMoreTicket,
         TicketId    $ticketId,
@@ -115,7 +112,7 @@ class MarketPlaceService
      * @param Marketplace $marketplace
      * @return void
      */
-    public function emptyMarketPlaceIfItNeeds(
+    private function emptyMarketPlaceIfItNeeds(
         int         $isThereMoreTicket,
         ?Ticket     $findTheTicket,
         Marketplace $marketplace
@@ -166,8 +163,8 @@ class MarketPlaceService
         Seller $seller
     ): bool
     {
-        $listingService = new ListingService();
-        if ($listingService->compareBarcodes($currentTicket, $newTicket)) {
+        $ticketService = new TicketService();
+        if ($ticketService->compareBarcodes($currentTicket, $newTicket)) {
             if (!($currentTicket->getBuyer()?->getName()
                 && $currentTicket->getBuyer()?->getName() === $seller?->getName())) {
                 return false;

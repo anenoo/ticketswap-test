@@ -20,14 +20,14 @@ class TomListingOneTicketNoBuyer
         $this->setListing(
             new Listing(
                 id: new ListingId('26A7E5C4-3F59-4B3C-B5EB-6F2718BC31AD'),
-                seller: new Seller('Tom'),
+                seller: new Seller(name: 'Tom'),
                 tickets: [
                     new Ticket(
-                        new TicketId('45B96761-E533-4925-859F-3CA62182848E'),
-                        [new Barcode('EAN-13', '893759834')]
+                        id: new TicketId('45B96761-E533-4925-859F-3CA62182848E'),
+                        barcodes: [new Barcode('EAN-13', '893759834')]
                     ),
                 ],
-                price: new Money(4950, new Currency('EUR')),
+                price: new Money(4950, new Currency('EUR'))
             )
         );
     }
