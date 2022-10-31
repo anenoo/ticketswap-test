@@ -7,6 +7,7 @@ use TicketSwap\Assessment\Entity\Buyer;
 use TicketSwap\Assessment\Entity\Decorators\Barcode;
 use TicketSwap\Assessment\Entity\Decorators\TicketId;
 use TicketSwap\Assessment\Entity\Marketplace;
+use TicketSwap\Assessment\Entity\Seller;
 use TicketSwap\Assessment\Entity\Ticket;
 use TicketSwap\Assessment\Exception\TicketAlreadySoldException;
 use TicketSwap\Assessment\Service\MarketplaceService;
@@ -48,6 +49,7 @@ class MarketplaceServiceTest extends TestCase
     /**
      * Business Rule: Buyers can buy individual tickets from a listing, while admin approved the list.
      * @covers \TicketSwap\Assessment\Service\MarketplaceService::buyTicket
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::searchListToBuyTicket
      * @group marketplace
      * @test
      */
@@ -69,6 +71,7 @@ class MarketplaceServiceTest extends TestCase
      * Business Rule: It should not be possible to buy the same ticket twice.
      * The list is approved by admin.
      * @covers \TicketSwap\Assessment\Service\MarketplaceService::buyTicket
+     * @covers \TicketSwap\Assessment\Exception\TicketAlreadySoldException::withTicket
      * @group marketplace
      * @test
      */
@@ -134,7 +137,6 @@ class MarketplaceServiceTest extends TestCase
             marketplace: $marketplace
         );
         $this->assertTrue($canBeAdd, 'Can sell the same ticket he/she buy');
-
     }
 
     /**
@@ -155,6 +157,90 @@ class MarketplaceServiceTest extends TestCase
         );
         $this->assertInstanceOf(Ticket::class, $ticket);
         $this->assertCount(0, $marketplace->getListingsForSale());
+    }
 
+    /**
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::ticketIsAvailableByTheBuyer
+     * @group marketplace
+     * @test
+     */
+    public function itShouldBePossibleToCheckATicketIsAvailableByTheBuyer()
+    {
+        $marketplace = $this->MarketplaceApprovedByAdminExample;
+
+        $isAvailable = $this->marketPlaceService->ticketIsAvailableByTheBuyer(
+            ticket: new Ticket(
+                new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode('EAN-13', '38974312923')]
+            ),
+            listing: $marketplace->getListingsForSale()[0],
+            ticketId: new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+            buyer: new Buyer('Sarah')
+        );
+
+        $this->assertTrue($isAvailable);
+    }
+
+    /**
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::emptyMarketPlaceIfItNeeds
+     * @group marketplace
+     * @test
+     */
+    public function itShouldBePossibleEmptyTheMarketPlace()
+    {
+        $marketplace = $this->MarketplaceApprovedByAdminExample;
+
+        $this->marketPlaceService->emptyMarketPlaceIfItNeeds(
+            isThereMoreTicket: 1,
+            findTheTicket: new Ticket(
+                new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode('EAN-13', '38974312923')]
+            ),
+            marketplace: $marketplace
+        );
+
+        $this->assertCount(0, $marketplace->getListingsForSale());
+    }
+
+    /**
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::compareTicketsForNewSellListing
+     * @group marketplace
+     * @test
+     */
+    public function itShouldBePossibleToCompareTicketsForNewSellListing()
+    {
+        $compareResult = $this->marketPlaceService->compareTicketsForNewSellListing(
+            newTicket: new Ticket(
+                new TicketId(id: '6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode(type: 'EAN-13', value: '38974312923')],
+            ),
+            currentTicket: new Ticket(
+                new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode('EAN-13', '38974312923')]
+            ),
+            seller: new Seller('Maria')
+        );
+        $this->assertFalse($compareResult);
+    }
+
+    /**
+     * @covers \TicketSwap\Assessment\Service\MarketplaceService::compareTicketsForNewSellListing
+     * @group marketplace
+     * @test
+     */
+    public function itShouldBePossibleToCompareTicketsForNewSellListingIsNotAvailable()
+    {
+        $compareResult = $this->marketPlaceService->compareTicketsForNewSellListing(
+            newTicket: new Ticket(
+                new TicketId(id: '6293BB44-SDFG-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode(type: 'EAN-14', value: '34567895678')],
+            ),
+            currentTicket: new Ticket(
+                new TicketId('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B'),
+                [new Barcode('EAN-13', '38974312923')]
+            ),
+            seller: new Seller('Maria')
+        );
+        $this->assertTrue($compareResult);
     }
 }

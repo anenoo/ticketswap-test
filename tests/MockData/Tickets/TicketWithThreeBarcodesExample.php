@@ -41,5 +41,4 @@ class TicketWithThreeBarcodesExample
         $this->ticket = $ticket;
         return $this;
     }
-
 }

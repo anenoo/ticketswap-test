@@ -3,6 +3,8 @@
 namespace TicketSwap\Assessment\tests\Entity;
 
 use PHPUnit\Framework\TestCase;
+use TicketSwap\Assessment\Entity\Marketplace;
+use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketNoBuyerWithAdministrator;
 use TicketSwap\Assessment\tests\MockData\Listings\TomListingOneTicketNoBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\TomListingOneTicketNoBuyerWithAdministrator;
 use TicketSwap\Assessment\tests\MockData\Marketplaces\MarketplaceApprovedByAdminExample;
@@ -79,7 +81,7 @@ class MarketplaceTest extends TestCase
     /**
      * Business Rule: Sellers can create listings with tickets.
      * It Should be possible to remove a list from marketplace
-     * @covers \TicketSwap\Assessment\Entity\Marketplace::addToListForSale
+     * @covers \TicketSwap\Assessment\Entity\Marketplace::removeFromListForSale
      * @group marketplace
      * @test
      */
@@ -98,5 +100,65 @@ class MarketplaceTest extends TestCase
         $this->assertCount(1, $listingsForSale);
     }
 
+    /**
+     * Business Rule: Sellers can create listings with tickets.
+     * It Should be possible to remove a list from marketplace
+     * @covers \TicketSwap\Assessment\Entity\Marketplace::emptyListingForSales
+     * @group marketplace
+     * @test
+     */
+    public function itShouldNotBePossibleToEmptyMarketPlace()
+    {
+        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
 
+        $marketplace->addToListForSale(
+            (new TomListingOneTicketNoBuyerWithAdministrator())->getListing()
+        );
+
+        $marketplace->emptyListingForSales();
+
+        $listingsForSale = $marketplace->getListingsForSale();
+
+        $this->assertCount(0, $listingsForSale);
+    }
+
+    /**
+     * Business Rule: Sellers can create listings with tickets.
+     * @covers \TicketSwap\Assessment\Entity\Marketplace::setListingsForSale
+     * @group marketplace
+     * @test
+     */
+    public function itShouldNotBePossibleToPutListingForSale()
+    {
+        $marketplace = (new MarketplaceApprovedByAdminExample())->getMarketplace();
+
+        $marketplace->setListingsForSale(
+            [
+                (new TomListingOneTicketNoBuyerWithAdministrator())->getListing(),
+            ]
+        );
+
+        $listingsForSale = $marketplace->getListingsForSale();
+
+        $this->assertCount(1, $listingsForSale);
+    }
+
+    /**
+     * Business Rule: Sellers can create listings with tickets.
+     * @covers \TicketSwap\Assessment\Entity\Marketplace::__construct
+     * @group marketplace
+     * @test
+     */
+    public function itShouldNotBePossibleToPutListingForSaleInitialState()
+    {
+        $marketplace = new Marketplace(
+            listingsForSale: [
+                (new PascalListingWithOneTicketNoBuyerWithAdministrator())->getListing(),
+            ]
+        );
+
+        $listingsForSale = $marketplace->getListingsForSale();
+
+        $this->assertCount(1, $listingsForSale);
+    }
 }

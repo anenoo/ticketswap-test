@@ -35,8 +35,7 @@ class Administrator
         string $name,
         string $username,
         string $password
-    )
-    {
+    ) {
         $this->setId($id)
             ->setName($name)
             ->setUsername($username)
@@ -115,5 +114,4 @@ class Administrator
         $this->password = $password;
         return $this;
     }
-
 }

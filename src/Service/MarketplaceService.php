@@ -14,7 +14,7 @@ class MarketplaceService
     /**
      *
      */
-    function __construct()
+    public function __construct()
     {
     }
 
@@ -28,8 +28,7 @@ class MarketplaceService
         Marketplace $marketplace,
         Buyer       $buyer,
         TicketId    $ticketId
-    ): ?Ticket
-    {
+    ): ?Ticket {
         $isThereMoreTicket = 0;
         $findTheTicket = null;
         foreach ($marketplace->getListingsForSale() as $listingKey => $listing) {
@@ -65,8 +64,7 @@ class MarketplaceService
         ?Ticket     $findTheTicket,
         Marketplace $marketplace,
         int|string  $listingKey
-    ): array
-    {
+    ): array {
         foreach ($listing->getTickets() as $ticket) {
             $isThereMoreTicket++;
             if ($this->ticketIsAvailableByTheBuyer(
@@ -90,13 +88,12 @@ class MarketplaceService
      * @param TicketId $ticketId
      * @return bool
      */
-    private function ticketIsAvailableByTheBuyer(
+    public function ticketIsAvailableByTheBuyer(
         Ticket   $ticket,
         Listing  $listing,
         TicketId $ticketId,
         Buyer    $buyer
-    ): bool
-    {
+    ): bool {
         return (
             $ticket->getId()->equals($ticketId)
             && (
@@ -112,12 +109,11 @@ class MarketplaceService
      * @param Marketplace $marketplace
      * @return void
      */
-    private function emptyMarketPlaceIfItNeeds(
+    public function emptyMarketPlaceIfItNeeds(
         int         $isThereMoreTicket,
         ?Ticket     $findTheTicket,
         Marketplace $marketplace
-    ): void
-    {
+    ): void {
         if ($isThereMoreTicket === 1 && $findTheTicket instanceof Ticket) {
             $marketplace->emptyListingForSales();
         }
@@ -131,8 +127,7 @@ class MarketplaceService
     public function checkTheTicketAlreadyAdded(
         Listing     $listing,
         Marketplace $marketplace
-    ): bool
-    {
+    ): bool {
         foreach ($marketplace->getListingsForSale() as $list) {
             foreach ($list->getTickets() as $currentTicket) {
                 foreach ($listing->getTickets() as $newTicket) {
@@ -157,12 +152,11 @@ class MarketplaceService
      * @param Seller $seller
      * @return bool
      */
-    private function compareTicketsForNewSellListing(
+    public function compareTicketsForNewSellListing(
         Ticket $newTicket,
         Ticket $currentTicket,
         Seller $seller
-    ): bool
-    {
+    ): bool {
         $ticketService = new TicketService();
         if ($ticketService->compareBarcodes($currentTicket, $newTicket)) {
             if (!($currentTicket->getBuyer()?->getName()
@@ -172,5 +166,4 @@ class MarketplaceService
         }
         return true;
     }
-
 }

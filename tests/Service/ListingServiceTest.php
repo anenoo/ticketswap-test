@@ -3,7 +3,10 @@
 namespace TicketSwap\Assessment\tests\Entity;
 
 use PHPUnit\Framework\TestCase;
+use TicketSwap\Assessment\Entity\Decorators\Barcode;
+use TicketSwap\Assessment\Entity\Decorators\TicketId;
 use TicketSwap\Assessment\Entity\Listing;
+use TicketSwap\Assessment\Entity\Ticket;
 use TicketSwap\Assessment\Service\ListingService;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithOneTicketNoBuyer;
 use TicketSwap\Assessment\tests\MockData\Listings\PascalListingWithTwoTicketsOneBuyer;
@@ -55,7 +58,6 @@ class ListingServiceTest extends TestCase
      */
     public function itShouldListTheTicketsForSale()
     {
-
         $listing = $this->PascalListingWithTwoTicketsOneBuyer;
         $ticketsForSale = $this->listingService->buildTicketsForBuy($listing->getTickets(), true);
 
@@ -71,7 +73,6 @@ class ListingServiceTest extends TestCase
      */
     public function itShouldListTheTicketsNotForSale()
     {
-
         $listing = $this->PascalListingWithTwoTicketsOneBuyer;
         $ticketsNotForSale = $this->listingService->buildTicketsForBuy($listing->getTickets(), false);
 
@@ -79,4 +80,21 @@ class ListingServiceTest extends TestCase
         $this->assertSame('6293BB44-2F5F-4E2A-ACA8-8CDF01AF401B', (string)$ticketsNotForSale[0]->getId());
     }
 
+    /**
+     * Business Rule: It should be possible for create a list of tickets NOT for sale
+     * @covers \TicketSwap\Assessment\Service\ListingService::availableToBuy
+     * @group listing
+     * @test
+     */
+    public function itShouldBePossibleToCheckAvailabilityForSaleATTicket()
+    {
+        $availableForSale = $this->listingService->availableToBuy(
+            true,
+            new Ticket(
+                new TicketId(id: 'B47CBE2D-9F80-47D9-A9CC-894CE82AA6BA'),
+                [new Barcode(type: 'EAN-13', value: '38957953498')]
+            )
+        );
+        $this->assertTrue($availableForSale);
+    }
 }

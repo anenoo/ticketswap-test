@@ -37,5 +37,4 @@ class MarketplaceExample
         $this->marketplace = $marketplace;
         return $this;
     }
-
 }

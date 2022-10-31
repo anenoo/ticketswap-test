@@ -37,5 +37,4 @@ class MarketplaceWithDuplicateTicketsExample
         $this->marketplace = $marketplace;
         return $this;
     }
-
 }

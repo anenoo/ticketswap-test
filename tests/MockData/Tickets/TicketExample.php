@@ -37,5 +37,4 @@ class TicketExample
         $this->ticket = $ticket;
         return $this;
     }
-
 }

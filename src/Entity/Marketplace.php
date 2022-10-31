@@ -56,8 +56,9 @@ final class Marketplace
      */
     public function addToListForSale(Listing $listingsForSale): Marketplace
     {
-        if ($listingsForSale->isApproveByAdmin())
+        if ($listingsForSale->isApproveByAdmin()) {
             $this->listingsForSale[] = $listingsForSale;
+        }
         return $this;
     }
 
@@ -70,5 +71,4 @@ final class Marketplace
         unset($this->listingsForSale[$key]);
         return $this;
     }
-
 }

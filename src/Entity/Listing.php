@@ -43,8 +43,7 @@ final class Listing
         array         $tickets,
         Money         $price,
         Administrator $administrator = null
-    )
-    {
+    ) {
         $this->setId($id)
             ->setSeller($seller)
             ->setTickets($tickets)
@@ -143,7 +142,6 @@ final class Listing
         }
         $this->tickets[] = $ticket;
         return true;
-
     }
 
     /**

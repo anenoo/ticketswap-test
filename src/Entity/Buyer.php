@@ -47,6 +47,4 @@ final class Buyer implements Stringable
         $this->name = $name;
         return $this;
     }
-
-
 }

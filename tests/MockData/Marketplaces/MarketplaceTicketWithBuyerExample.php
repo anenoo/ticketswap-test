@@ -37,5 +37,4 @@ class MarketplaceTicketWithBuyerExample
         $this->marketplace = $marketplace;
         return $this;
     }
-
 }

@@ -37,5 +37,4 @@ class MarketplaceApprovedByAdminExample
         $this->marketplace = $marketplace;
         return $this;
     }
-
 }

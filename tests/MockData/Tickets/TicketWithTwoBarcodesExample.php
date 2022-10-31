@@ -40,5 +40,4 @@ class TicketWithTwoBarcodesExample
         $this->ticket = $ticket;
         return $this;
     }
-
 }

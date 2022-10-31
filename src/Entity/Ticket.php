@@ -7,7 +7,6 @@ use TicketSwap\Assessment\Entity\Decorators\TicketId;
 
 final class Ticket
 {
-
     /**
      * @var TicketId
      */
@@ -30,8 +29,7 @@ final class Ticket
         TicketId $id,
         array    $barcodes,
         ?Buyer   $buyer = null
-    )
-    {
+    ) {
         $this->setId($id)
             ->setBarcodes($barcodes)
             ->setBuyer($buyer);

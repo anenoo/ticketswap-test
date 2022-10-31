@@ -14,8 +14,7 @@ class TicketService
     public function compareBarcodes(
         Ticket $currentTicket,
         Ticket $newTicket
-    ): bool
-    {
+    ): bool {
         foreach ($currentTicket->getBarcodes() as $currentBarcode) {
             if (in_array((string)$currentBarcode, $newTicket->getBarcodes())) {
                 return true;
